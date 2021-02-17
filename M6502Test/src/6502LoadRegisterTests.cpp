@@ -9,7 +9,7 @@ public:
 
     virtual void SetUp()
     {
-        cpu.Reset(mem);
+        cpu.Reset(0xFFFC, mem);
     }
 
     virtual void TearDown()

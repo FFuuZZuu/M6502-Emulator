@@ -295,10 +295,15 @@ m6502::s32 m6502::CPU::Execute(m6502::s32 Cycles, m6502::Mem &memory)
             case INS_JSR:
             {
                 Word SubAddr = FetchWord(Cycles, memory);
-                WriteWord(PC - 1, Cycles, SP,  memory);
-                SP += 2;
+                PushPCToStack(Cycles, memory);
                 PC = SubAddr;
                 Cycles--;
+            } break;
+            case INS_RTS:
+            {
+                Word ReturnAddress = PopWordFromStack(Cycles, memory);
+                PC = ReturnAddress + 1;
+                Cycles -= 2;
             } break;
             default:
             {

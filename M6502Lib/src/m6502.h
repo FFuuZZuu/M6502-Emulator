@@ -57,7 +57,7 @@ struct m6502::Mem
 struct m6502::CPU
 {
     Word PC;        // Program Counter
-    Word SP;        // Stack Pointer
+    Byte SP;        // Stack Pointer
 
     Byte A, X, Y;   // Registers
 
@@ -71,10 +71,10 @@ struct m6502::CPU
     Byte N: 1;     // Negative Flag
 
     // Reset Registers, Flags, and the Memory
-    void Reset(Mem &memory)
+    void Reset(Word ResetVector, Mem &memory)
     {
-        PC = 0xFFFC;
-        SP = 0x0100;
+        PC = ResetVector;
+        SP = 0xFF;
         C = Z = I = D = B = V = N = 0;
         A = X = Y = 0;
         memory.Initialise();
@@ -131,6 +131,27 @@ struct m6502::CPU
         Cycles -= 2;
     }
 
+    // @returns the stack pointer as a full 16-bit address
+    Word SPToAddress() const
+    {
+        return 0x100 | SP;
+    }
+
+    // Push the PC-1 onto the stack
+    void PushPCToStack( s32& Cycles, Mem& memory)
+    {
+        WriteWord(PC - 1, Cycles, SPToAddress() - 1,  memory);
+        SP -= 2;
+    }
+
+    Word PopWordFromStack( s32& Cycles, Mem& memory)
+    {
+        Word Value = ReadWord(Cycles, SPToAddress() + 1, memory);
+        SP += 2;
+        Cycles--;
+        return Value;
+    }
+
     /*
      * Instructions + Opcode
      */
@@ -173,7 +194,9 @@ struct m6502::CPU
         INS_STY_ZPX = 0x94,
         INS_STY_ABS = 0x8C,
         // JSR
-        INS_JSR = 0x20;
+        INS_JSR = 0x20,
+        //RTS
+        INS_RTS = 0x60;
 
     /*
      * Sets the correct process status after a load register instruction.
