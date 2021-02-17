@@ -42,21 +42,15 @@ struct m6502::Mem
     // Read 1 Byte
     Byte operator[](u32 Address) const
     {
+        // TODO: ASSERT that Address is < MAX_MEM
         return Data[Address];
     }
 
     // Write 1 Byte
     Byte& operator[](u32 Address)
     {
+        // TODO: ASSERT that Address is < MAX_MEM
         return Data[Address];
-    }
-
-    // Write 2 Bytes
-    void WriteWord(Word Value, u32 Address, s32& Cycles)
-    {
-        Data[Address] = Value & 0xFF;
-        Data[Address + 1] = (Value >> 8);
-        Cycles -= 2;
     }
 };
 
@@ -122,10 +116,19 @@ struct m6502::CPU
         return LoByte | (HiByte << 8);
     }
 
+    // Write 1 byte to memory
     void WriteByte(Byte Value, s32& Cycles, Word Address, Mem& memory)
     {
         memory[Address] = Value;
         Cycles--;
+    }
+
+    // Write 2 bytes to memory
+    void WriteWord(Word Value, s32& Cycles, Word Address, Mem& memory)
+    {
+        memory[Address] = Value & 0xFF;
+        memory[Address + 1] = (Value >> 8);
+        Cycles -= 2;
     }
 
     /*
@@ -201,12 +204,32 @@ struct m6502::CPU
     // Addressing mode - Absolute with X offset
     Word AddrAbsoluteX(s32& Cycles, const Mem& memory);
 
+    /*
+     * Addressing mode - Absolute with X offset (5 cycles)
+     *  - See "STA Absolute, X"
+     */
+    Word AddrAbsoluteX_5(s32& Cycles, const Mem& memory);
+
     // Addressing mode - Absolute with Y offset
     Word AddrAbsoluteY(s32& Cycles, const Mem& memory);
+
+    /*
+     * Addressing mode - Absolute with Y offset (5 cycles)
+     *  - Takes extra cycle for page boundary
+     *  - See "STA Absolute, Y"
+     */
+    Word AddrAbsoluteY_5(s32& Cycles, const Mem& memory);
 
     // Addressing mode - Indirect X | Indexed Indirect
     Word AddrIndirectX(s32& Cycles, const Mem& memory);
 
     // Addressing mode - Indirect Y | Indirect Indexed
     Word AddrIndirectY(s32& Cycles, const Mem& memory);
+
+    /*
+     * Addressing mode - Indirect Y | Indirect Indexed (6 cycles)
+     *  - Takes extra cycle for page boundary
+     *  - See "STA Indirect, Y"
+     */
+    Word AddrIndirectY_6(s32& Cycles, const Mem& memory);
 };

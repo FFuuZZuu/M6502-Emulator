@@ -48,6 +48,18 @@ m6502::Word m6502::CPU::AddrAbsoluteX(s32& Cycles, const Mem& memory)
     return AbsAddressX;
 }
 
+/*
+* Addressing mode - Absolute with X offset (5 cycles)
+*  - See "STA Absolute, X"
+*/
+m6502::Word m6502::CPU::AddrAbsoluteX_5(s32& Cycles, const Mem& memory)
+{
+    Word AbsAddress = FetchWord(Cycles, memory);
+    Word AbsAddressX = AbsAddress + X;
+    Cycles--;
+    return AbsAddressX;
+}
+
 // Addressing mode - Absolute with Y offset
 m6502::Word m6502::CPU::AddrAbsoluteY(s32& Cycles, const Mem& memory)
 {
@@ -57,6 +69,18 @@ m6502::Word m6502::CPU::AddrAbsoluteY(s32& Cycles, const Mem& memory)
     {
         Cycles--;
     }
+    return AbsAddressY;
+}
+
+/*
+* Addressing mode - Absolute with Y offset (5 cycles)
+*  - See "STA Absolute, Y"
+*/
+m6502::Word m6502::CPU::AddrAbsoluteY_5(s32& Cycles, const Mem& memory)
+{
+    Word AbsAddress = FetchWord(Cycles, memory);
+    Word AbsAddressY = AbsAddress + Y;
+    Cycles--;
     return AbsAddressY;
 }
 
@@ -80,6 +104,16 @@ m6502::Word m6502::CPU::AddrIndirectY(s32& Cycles, const Mem& memory)
     {
         Cycles--;
     }
+    return EffectiveAddrY;
+}
+
+// Addressing mode - Indirect Y | Indirect Indexed
+m6502::Word m6502::CPU::AddrIndirectY_6(s32& Cycles, const Mem& memory)
+{
+    Byte ZPAddress = FetchByte(Cycles, memory);
+    Word EffectiveAddr = ReadWord(Cycles, ZPAddress, memory);
+    Word EffectiveAddrY = EffectiveAddr + Y;
+    Cycles--;
     return EffectiveAddrY;
 }
 
@@ -239,15 +273,13 @@ m6502::s32 m6502::CPU::Execute(m6502::s32 Cycles, m6502::Mem &memory)
             } break;
             case INS_STA_ABSX:
             {
-                Word Address = AddrAbsoluteX(Cycles, memory);
+                Word Address = AddrAbsoluteX_5(Cycles, memory);
                 WriteByte(A, Cycles, Address, memory);
-                Cycles--; // TODO: Where is this cycle happening?
             } break;
             case INS_STA_ABSY:
             {
-                Word Address = AddrAbsoluteY(Cycles, memory);
+                Word Address = AddrAbsoluteY_5(Cycles, memory);
                 WriteByte(A, Cycles, Address, memory);
-                Cycles--; // TODO: Where is this cycle happening?
             } break;
             // STORE REGISTER INDIRECT (X Y)
             case INS_STA_INDX:
@@ -257,14 +289,13 @@ m6502::s32 m6502::CPU::Execute(m6502::s32 Cycles, m6502::Mem &memory)
             } break;
             case INS_STA_INDY:
             {
-                Word Address = AddrIndirectY(Cycles, memory);
+                Word Address = AddrIndirectY_6(Cycles, memory);
                 WriteByte(A, Cycles, Address, memory);
-                Cycles--; // TODO: Where is this cycle happening?
             } break;
             case INS_JSR:
             {
                 Word SubAddr = FetchWord(Cycles, memory);
-                memory.WriteWord(PC - 1, SP, Cycles);
+                WriteWord(PC - 1, Cycles, SP,  memory);
                 SP += 2;
                 PC = SubAddr;
                 Cycles--;
