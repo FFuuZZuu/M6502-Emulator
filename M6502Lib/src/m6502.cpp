@@ -292,6 +292,7 @@ m6502::s32 m6502::CPU::Execute(m6502::s32 Cycles, m6502::Mem &memory)
                 Word Address = AddrIndirectY_6(Cycles, memory);
                 WriteByte(A, Cycles, Address, memory);
             } break;
+            // JUMP COMMANDS
             case INS_JSR:
             {
                 Word SubAddr = FetchWord(Cycles, memory);
@@ -304,6 +305,24 @@ m6502::s32 m6502::CPU::Execute(m6502::s32 Cycles, m6502::Mem &memory)
                 Word ReturnAddress = PopWordFromStack(Cycles, memory);
                 PC = ReturnAddress + 1;
                 Cycles -= 2;
+            } break;
+            case INS_JMP_ABS:
+            {
+                Word Address = AddrAbsolute(Cycles, memory);
+                PC = Address;
+            } break;
+            /*
+             * TODO: Add case for when the indirect vector falls on a page boundary
+             *  - (e.g. 0x__FF where __ is any value from 0x00 to 0xFF)
+             *  - Fetches the LSB from 0x__FF (as expected)
+             *  - Fetches the MSB from 0x__00 (different)
+             *  - Fixed in later chips such as the 65SC02 (read from header file)
+             */
+            case INS_JMP_IND:
+            {
+                Word Address = AddrAbsolute(Cycles, memory);
+                Address = ReadWord(Cycles, Address, memory);
+                PC = Address;
             } break;
             default:
             {

@@ -11,3 +11,4 @@ Followed along with Dave Poo's "Emulating a CPU in C++ series.
     * Unit tests
     * Instructions themselves
 * Fix bugs (there will be many...)
+* Implement features that were only included on certain 6502 chips

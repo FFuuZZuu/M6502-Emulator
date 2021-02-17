@@ -31,11 +31,11 @@ public:
 
 static void VerifyUnmodifiedFlagsFromLoadRegister(const m6502::CPU& cpu, const m6502::CPU& CPUCopy)
 {
-    EXPECT_EQ(cpu.C, CPUCopy.C);
-    EXPECT_EQ(cpu.B, CPUCopy.B);
-    EXPECT_EQ(cpu.D, CPUCopy.D);
-    EXPECT_EQ(cpu.I, CPUCopy.I);
-    EXPECT_EQ(cpu.V, CPUCopy.V);
+    EXPECT_EQ(cpu.Flag.C, CPUCopy.Flag.C);
+    EXPECT_EQ(cpu.Flag.B, CPUCopy.Flag.B);
+    EXPECT_EQ(cpu.Flag.D, CPUCopy.Flag.D);
+    EXPECT_EQ(cpu.Flag.I, CPUCopy.Flag.I);
+    EXPECT_EQ(cpu.Flag.V, CPUCopy.Flag.V);
 }
 
 TEST_F(M6502LoadRegisterTests, TheCPUDoesNothingWhenWeExecuteZeroCycles)
@@ -71,7 +71,7 @@ void M6502LoadRegisterTests::TestLoadRegisterImmediate(m6502::Byte Opcode, m6502
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     mem[0xFFFC] = Opcode;
     mem[0xFFFD] = 0x84;
@@ -83,8 +83,8 @@ void M6502LoadRegisterTests::TestLoadRegisterImmediate(m6502::Byte Opcode, m6502
     // then:
     EXPECT_EQ(cpu.*Register, 0x84);
     EXPECT_EQ(CyclesUsed, 2);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_TRUE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_TRUE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -93,7 +93,7 @@ void M6502LoadRegisterTests::TestLoadRegisterZeroPage(m6502::Byte Opcode, m6502:
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     mem[0xFFFC] = Opcode;
     mem[0xFFFD] = 0x42;
@@ -106,8 +106,8 @@ void M6502LoadRegisterTests::TestLoadRegisterZeroPage(m6502::Byte Opcode, m6502:
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, 3);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -116,7 +116,7 @@ void M6502LoadRegisterTests::TestLoadRegisterZeroPageX(m6502::Byte Opcode, m6502
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     cpu.X = 5;
 
@@ -131,8 +131,8 @@ void M6502LoadRegisterTests::TestLoadRegisterZeroPageX(m6502::Byte Opcode, m6502
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, 4);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -141,7 +141,7 @@ void M6502LoadRegisterTests::TestLoadRegisterZeroPageY(m6502::Byte Opcode, m6502
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     cpu.Y = 5;
 
@@ -156,8 +156,8 @@ void M6502LoadRegisterTests::TestLoadRegisterZeroPageY(m6502::Byte Opcode, m6502
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, 4);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -166,7 +166,7 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsolute(m6502::Byte Opcode, m6502:
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     mem[0xFFFC] = Opcode;
     mem[0xFFFD] = 0x80;
@@ -181,8 +181,8 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsolute(m6502::Byte Opcode, m6502:
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -191,7 +191,7 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsoluteX(m6502::Byte Opcode, m6502
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     cpu.X = 1;
 
@@ -208,8 +208,8 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsoluteX(m6502::Byte Opcode, m6502
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -218,7 +218,7 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsoluteY(m6502::Byte Opcode, m6502
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     cpu.Y = 1;
 
@@ -235,8 +235,8 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsoluteY(m6502::Byte Opcode, m6502
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -260,8 +260,8 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsoluteXWhenItCrossesPageBoundary(
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -285,8 +285,8 @@ void M6502LoadRegisterTests::TestLoadRegisterAbsoluteYWhenItCrossesPageBoundary(
     // then:
     EXPECT_EQ(cpu.*Register, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -321,8 +321,8 @@ TEST_F(M6502LoadRegisterTests, LDAImmediateCanAffectTheZeroFlag)
     cpu.Execute(2, mem);
 
     // then:
-    EXPECT_TRUE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_TRUE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -379,8 +379,8 @@ TEST_F(M6502LoadRegisterTests, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenItWr
     // then:
     EXPECT_EQ(cpu.A, 0x37);
     EXPECT_EQ(CyclesUsed, 4);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -455,7 +455,7 @@ TEST_F(M6502LoadRegisterTests, LDAIndirectXCanLoadAValueIntoTheARegister)
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     cpu.X = 0x04;
 
@@ -473,8 +473,8 @@ TEST_F(M6502LoadRegisterTests, LDAIndirectXCanLoadAValueIntoTheARegister)
     // then:
     EXPECT_EQ(cpu.A, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -483,7 +483,7 @@ TEST_F(M6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegister)
     // given:
     using namespace m6502;
 
-    cpu.Z = cpu.N = true;
+    cpu.Flag.Z = cpu.Flag.N = true;
 
     cpu.Y = 0x04;
 
@@ -501,8 +501,8 @@ TEST_F(M6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegister)
     // then:
     EXPECT_EQ(cpu.A, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }
 
@@ -527,7 +527,7 @@ TEST_F(M6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegisterWhenItCr
     // then:
     EXPECT_EQ(cpu.A, 0x37);
     EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
+    EXPECT_FALSE(cpu.Flag.Z);
+    EXPECT_FALSE(cpu.Flag.N);
     VerifyUnmodifiedFlagsFromLoadRegister(cpu, CPUCopy);
 }

@@ -19,13 +19,13 @@ public:
 
     static void VerifyUnmodifiedFlagsFromStoreRegister(const m6502::CPU& cpu, const m6502::CPU& CPUCopy)
     {
-        EXPECT_EQ(cpu.C, CPUCopy.C);
-        EXPECT_EQ(cpu.Z, CPUCopy.Z);
-        EXPECT_EQ(cpu.B, CPUCopy.B);
-        EXPECT_EQ(cpu.D, CPUCopy.D);
-        EXPECT_EQ(cpu.I, CPUCopy.I);
-        EXPECT_EQ(cpu.V, CPUCopy.V);
-        EXPECT_EQ(cpu.N, CPUCopy.N);
+        EXPECT_EQ(cpu.Flag.C, CPUCopy.Flag.C);
+        EXPECT_EQ(cpu.Flag.Z, CPUCopy.Flag.Z);
+        EXPECT_EQ(cpu.Flag.B, CPUCopy.Flag.B);
+        EXPECT_EQ(cpu.Flag.D, CPUCopy.Flag.D);
+        EXPECT_EQ(cpu.Flag.I, CPUCopy.Flag.I);
+        EXPECT_EQ(cpu.Flag.V, CPUCopy.Flag.V);
+        EXPECT_EQ(cpu.Flag.N, CPUCopy.Flag.N);
     }
 
     void TestStoreRegisterZeroPage(m6502::Byte Opcode, m6502::Byte m6502::CPU::*Register)

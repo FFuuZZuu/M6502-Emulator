@@ -23,6 +23,7 @@ namespace m6502
 
     struct Mem;
     struct CPU;
+    struct StatusFlags;
 }
 
 struct m6502::Mem
@@ -54,6 +55,18 @@ struct m6502::Mem
     }
 };
 
+struct m6502::StatusFlags
+{
+    Byte C: 1;     // Carry Flag
+    Byte Z: 1;     // Zero Flag
+    Byte I: 1;     // Interrupt Disable
+    Byte D: 1;     // Decimal Mode
+    Byte B: 1;     // Break Command
+    Byte Unused: 1;// Unused Empty Flag
+    Byte V: 1;     // Overflow Flag
+    Byte N: 1;     // Negative Flag
+};
+
 struct m6502::CPU
 {
     Word PC;        // Program Counter
@@ -62,20 +75,18 @@ struct m6502::CPU
     Byte A, X, Y;   // Registers
 
     // Status Flags
-    Byte C: 1;     // Carry Flag
-    Byte Z: 1;     // Zero Flag
-    Byte I: 1;     // Interrupt Disable
-    Byte D: 1;     // Decimal Mode
-    Byte B: 1;     // Break Command
-    Byte V: 1;     // Overflow Flag
-    Byte N: 1;     // Negative Flag
+    union
+    {
+        Byte PS;
+        StatusFlags Flag;
+    };
 
     // Reset Registers, Flags, and the Memory
     void Reset(Word ResetVector, Mem &memory)
     {
         PC = ResetVector;
         SP = 0xFF;
-        C = Z = I = D = B = V = N = 0;
+        Flag.C = Flag.Z = Flag.I = Flag.D = Flag.B = Flag.V = Flag.N = 0;
         A = X = Y = 0;
         memory.Initialise();
     }
@@ -196,7 +207,10 @@ struct m6502::CPU
         // JSR
         INS_JSR = 0x20,
         //RTS
-        INS_RTS = 0x60;
+        INS_RTS = 0x60,
+        //JMP
+        INS_JMP_ABS = 0x4C,
+        INS_JMP_IND = 0x6C;
 
     /*
      * Sets the correct process status after a load register instruction.
@@ -205,8 +219,8 @@ struct m6502::CPU
      */
     void LoadRegisterSetStatus(Byte Register)
     {
-        Z = (Register == 0);
-        N = (Register & 0b10000000) > 0;
+        Flag.Z = (Register == 0);
+        Flag.N = (Register & 0b10000000) > 0;
     }
 
     // @return the number of cycles used
