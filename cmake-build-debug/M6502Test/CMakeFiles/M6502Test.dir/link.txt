@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/M6502Test.dir/src/main.cpp.o CMakeFiles/M6502Test.dir/src/6502LoadRegisterTests.cpp.o CMakeFiles/M6502Test.dir/src/6502StoreRegisterTests.cpp.o  -o M6502Test  ../lib/libgtestd.a ../M6502Lib/libM6502Lib.a -lpthread 

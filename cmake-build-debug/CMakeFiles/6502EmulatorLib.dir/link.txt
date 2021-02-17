@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib6502EmulatorLib.a  CMakeFiles/6502EmulatorLib.dir/M6502Lib/src/main.cpp.o
+/usr/bin/ranlib lib6502EmulatorLib.a

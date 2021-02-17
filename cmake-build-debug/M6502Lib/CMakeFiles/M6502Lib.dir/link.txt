@@ -1,0 +1,2 @@
+/usr/bin/ar qc libM6502Lib.a  CMakeFiles/M6502Lib.dir/src/m6502.cpp.o
+/usr/bin/ranlib libM6502Lib.a
