@@ -2,7 +2,7 @@
 
 A full implementation of the MOS 6502 CPU in C++. 
 (http://www.obelisk.me.uk/6502)
-Followed along with Dave Poo's "Emulating a CPU in C++ series.
+Followed along with Dave Poo's "Emulating a CPU in C++ series."
 (https://youtube.com/playlist?list=PLLwK93hM93Z13TRzPx9JqTIn33feefl37)
 
 ### TODO:
